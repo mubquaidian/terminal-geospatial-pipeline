@@ -1,10 +1,18 @@
-# Use a lightweight Python image (Standard for Terminal Bench tasks)
+# Use a lightweight Python image
 FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements and install
+# Install system dependencies required by rasterio/GDAL
+# This includes libexpat1 which was missing and causing the error
+RUN apt-get update && apt-get install -y \
+    gdal-bin \
+    libgdal-dev \
+    libexpat1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python packages
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
